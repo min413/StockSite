@@ -140,7 +140,7 @@ function MainPage() {
                   <div>{renderChange(stock)}</div>
                 </StockPrices>
                 <StockDividend>
-                  <div>최근 배당금</div>
+                  <div>최근 배당금_수정</div>
                   <div>{"N/A"}</div>
                 </StockDividend>
                   
