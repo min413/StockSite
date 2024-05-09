@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import MainPage from './pages/MainPage';
+import StockDetailPage from './pages/StockDetailPage';
 
 function App() {
     return (
@@ -14,7 +15,7 @@ function App() {
                 <Route path="/" exact element={<MainPage/>} />
                 <Route path="/login" element={<LoginPage/>} />
                 <Route path="/signup" element={<SignupPage/>} />
-                {/* 추가 페이지 경로 */}
+                <Route path="/stock/:ticker" element={<StockDetailPage />} />
             </Routes>
             <Footer />
         </Router>
