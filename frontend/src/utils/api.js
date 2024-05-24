@@ -55,6 +55,7 @@ export const put = async (url, obj) => {
             headers: {
                 'Content-Type': 'application/json',
                 //"multipart/form-data",
+                'withCredentials': true
             }
         };
         const { data: response } = await axios.put(url, formData, config);

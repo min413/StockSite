@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import { useAuthContext } from "../auth/useAuthContext";
+import { apiManager } from "../utils/api";
 import companyMappings from "../data/companyMappings.json"; // JSON 파일을 임포트합니다.
 
 const GlobalStyle = createGlobalStyle`
@@ -94,16 +95,30 @@ const AddButton = styled.button`
   }
 `;
 
+const DeleteButton = styled.button`
+  padding: 5px 10px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e74c3c;
+  color: #FEFEFE;
+  cursor: pointer;
+  &:hover {
+    background-color: #c0392b;
+  }
+`;
+
+
 function MainPage() {
   const [stocks, setStocks] = useState([]);
   const { user } = useAuthContext();
   const [newStock, setNewStock] = useState("");
+  const [userObj, setUserObj] = useState('')
 
   useEffect(() => {
     const fetchStockData = async () => {
-      const tickers = ["AAPL", "MSFT", "TSLA", "SPY", "005930.KS", "00104K.KS"];
       const fetchedStocks = await Promise.all(
-        tickers.map(async (ticker) => {
+        JSON.parse(user?.favorite).map(async (ticker) => {
           try {
             const response = await axios.post(
               "http://localhost:5000/get-stock-data",
@@ -117,9 +132,11 @@ function MainPage() {
         })
       );
       setStocks(fetchedStocks);
+      console.log(user)
     };
 
     fetchStockData();
+    setUserObj({...user})
   }, []);
 
   const getCompanyName = (ticker) => {
@@ -157,10 +174,38 @@ function MainPage() {
       );
       setStocks([...stocks, { ticker: newStock, ...response.data }]);
       setNewStock("");
+      setUserObj({
+        ...user,
+        ['favorite']: JSON.stringify(stocks)
+      })
     } catch (error) {
       console.error("Error adding stock:", error);
     }
   };
+
+  const handleDeleteStock = (e, ticker) => {
+    e.preventDefault();
+    setStocks(stocks.filter(stock => stock.ticker !== ticker));
+    setUserObj({
+      ...user,
+      ['favorite']: JSON.stringify(stocks)
+    })
+  };
+
+  const onChangeUserInfo = async () => {
+
+    let result = await apiManager('auth/change-info', 'update', {
+      user_name: userObj?.user_name,
+      user_pw: userObj?.user_pw,
+      nickname: userObj?.nickname,
+      favorite: userObj?.favorite,
+      portfolio: userObj?.portfolio
+    })
+    if (result) {
+      toast.success('성공적으로 변경되었습니다.');
+    }
+  }
+
 
   return (
     <>
@@ -176,23 +221,28 @@ function MainPage() {
           <AddButton type="submit">추가</AddButton>
         </AddStockForm>
         <StockList>
-          {stocks.map((stock, index) => (
-            <Link key={index} to={`/stock/${stock.ticker}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <StockInfo>
-                <StockDetail>
+        {user && 
+                stocks.map((stock, idx) => (
+                  <Link key={idx} to={`/stock/${stock.ticker}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <StockInfo>
+                  <StockDetail>
                   <CompanyName>{getCompanyName(stock.ticker)}</CompanyName>
                 </StockDetail>
                 <StockPrices>
-                  <div>${formatPrice(stock.last_close)}</div>
+                <div>${formatPrice(stock.last_close)}</div>
                   <div>{renderChange(stock)}</div>
                 </StockPrices>
                 <StockDividend>
-                  <div>최근 배당금</div>
+                <div>최근 배당금</div>
                   <div>{stock.latest_div_date}</div>
                 </StockDividend>
-              </StockInfo>
-            </Link>
-          ))}
+                <DeleteButton onClick={(e) => handleDeleteStock(e, stock.ticker)}>제거</DeleteButton>
+
+                </StockInfo>
+                  </Link>
+                ))
+              }
+              <div onClick={onChangeUserInfo}>변경사항 저장</div>
         </StockList>
       </FavoriteArea>
     </>

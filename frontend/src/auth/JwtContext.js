@@ -6,14 +6,6 @@ import axios from '../utils/axios';
 
 import { toast } from 'react-hot-toast';
 
-// ----------------------------------------------------------------------
-
-// NOTE:
-// We only build demo at basic level.
-// Customer will need to do some extra handling yourself if you want to extend the logic and other features...
-
-// ----------------------------------------------------------------------
-
 const initialState = {
   isInitialized: false,
   isAuthenticated: false,

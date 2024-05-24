@@ -37,7 +37,7 @@ export const checkLevel = (token, level, res) => { //유저 정보 뿌려주기
             return false
 
         //const decoded = jwt.decode(token)
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, 'wjdrlaalsdlsckddnr');
         const user_level = decoded?.level
         if (level > user_level)
             return false
@@ -54,7 +54,7 @@ export const checkDns = (token) => { //dns 정보 뿌려주기
             return false
 
         //const decoded = jwt.decode(token)
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, 'wjdrlaalsdlsckddnr');
 
         if (decoded?.id)
             return decoded
@@ -74,6 +74,7 @@ export const response = async (req, res, code, message, data) => { //응답 포�
         'data': data,
     }
     const decode_user = checkLevel(req.cookies.token, 0, res)
+    //console.log(res)
     const decode_dns = checkDns(req.cookies.dns, 0)
     //let save_log = await logRequestResponse(req, resDict, decode_user, decode_dns);
     if (req?.IS_RETURN) {

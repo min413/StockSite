@@ -67,11 +67,15 @@ function LoginPage() {
 
     const { login } = useAuthContext()
 
+    const toMainPage = () => {
+        window.location.pathname = '/'
+    }
+
     const onLogin = async () => {
         let user = await login(username, password)
         if (user) {
             toast.success("로그인하였습니다.")
-            console.log(user)
+            
         }
       }
 

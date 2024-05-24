@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import styled from 'styled-components';
-
+import { useAuthContext } from '../auth/useAuthContext';
+import toast from 'react-hot-toast';
 
 // 스타일드 컴포넌트 정의
 const StyledHeader = styled.header`
@@ -38,19 +39,51 @@ const StyledLink = styled(RouterLink)`
   }
 `;
 
+const StyledBox = styled(RouterLink)`
+  color: white;
+  margin-right: 20px;
+  text-decoration: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor:default;
+`;
+
 const TitleLink = styled(StyledLink)`
   margin-right: auto;
 `;
 
 function Header() {
+  const { user, logout } = useAuthContext()
+
+  const onLogout = async () => {
+    let result = await logout();
+}
+
+const toastEffect = () => {
+  if (!user) {
+    toast.error('로그인해주세요.')
+  } else {
+    return
+  }
+}
+
     return (
         <StyledHeader>
             <Container>
                 <TitleLink to="/">Stock Tracker</TitleLink>
                 <StyledNav>
-                    <StyledLink to="/portfolio">My Portfolio</StyledLink>
-                    <StyledLink to="/login">Login</StyledLink>
-                    <StyledLink to="/signup">Sign up</StyledLink>
+                    <StyledLink onClick={() => {!user && toastEffect()}} to={user ? "/portfolio" : ''}>My Portfolio</StyledLink>
+                    {
+                      user ? 
+                      <StyledLink onClick={() => {onLogout()}} to="/login">Logout</StyledLink> 
+                      :
+                      <StyledLink to="/login">Login</StyledLink>
+                    }
+                    { user ?
+                    <StyledBox>{user.nickname}님 환영합니다.</StyledBox>
+                    : 
+                    <StyledLink to="/signup">Sign up</StyledLink> 
+                    }
                 </StyledNav>
             </Container>
         </StyledHeader>

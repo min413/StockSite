@@ -19,30 +19,18 @@ const authCtrl = {
             }
             user_pw = (await createHashedPassword(user_pw, user.user_salt)).hashedPassword;
             if (user_pw != user.user_pw) {
-                console.log(user_pw)
-                console.log(user.user_pw)
                 return response(req, res, -100, "가입되지 않은 회원입니다.", {})
             }
-            if (user?.status == 1) {
-                return response(req, res, -100, "승인 대기중입니다.", {})
-            }
-            if (user?.status == 2) {
-                return response(req, res, -100, "로그인 불가 회원입니다.", {})
-            }
-            if (user?.status == 3) {
-                return response(req, res, -100, "탈퇴회원입니다.", {})
-            }
-
             const token = makeUserToken({
                 id: user.id,
                 user_name: user.user_name,
                 nickname: user.nickname,
             })
+
             res.cookie("token", token, {
                 httpOnly: true,
                 maxAge: (60 * 60 * 1000) * 12 * 2,
-                //sameSite: 'none', 
-                //secure: true 
+                //sameSite: 'none'
             });
             return response(req, res, 100, "success", user)
         } catch (err) {
@@ -61,7 +49,6 @@ const authCtrl = {
                 user_pw,
                 nickname,
             } = req.body;
-            //console.log(req)
             if (!user_pw) {
                 return response(req, res, -100, "비밀번호를 입력해 주세요.", {});
             }
@@ -116,28 +103,27 @@ const authCtrl = {
 
         }
     },
-    /*changeInfo: async (req, res, next) => {
+    changeInfo: async (req, res, next) => {
         try {
             const decode_user = checkLevel(req.cookies.token, 0, res);
             const decode_dns = checkDns(req.cookies.dns);
             const {
+                id,
+                user_name,
+                user_pw,
                 nickname,
-                phone_num,
-                phone_token,
-                profile_img,
+                favorite,
+                portfolio,
             } = req.body
-            let send_log = await pool.query(`SELECT * FROM phone_check_tokens WHERE phone_token=? ORDER BY id DESC LIMIT 1`, [
-                phone_token,
-            ])
-            if (!send_log) {
-                return response(req, res, -100, "토큰을 찾을 수 없습니다.", false)
-            }
+            
             let result = await updateQuery('users', {
+                user_name,
+                user_pw,
                 nickname,
-                phone_num,
-                profile_img,
+                favorite,
+                portfolio,
             }, decode_user?.id);
-            await res.clearCookie('token');
+            
             return response(req, res, 100, "success", {})
         } catch (err) {
             console.log(err)
@@ -195,7 +181,7 @@ const authCtrl = {
         } finally {
 
         }
-    },*/
+    },
     resign: async (req, res, next) => {
         try {
             const decode_user = checkLevel(req.cookies.token, 0, res);

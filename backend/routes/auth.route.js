@@ -15,20 +15,14 @@ router
 router
     .route('/sign-out')
     .post(authCtrl.signOut);
-/*router
-    .route('/code')
-    .post(authCtrl.sendPhoneVerifyCode);
-router
-    .route('/code/check')
-    .post(authCtrl.checkPhoneVerifyCode);
 router
     .route('/change-password')
-    .put(authCtrl.changePassword);*/
+    .put(authCtrl.changePassword);
 router
     .route('/resign')
     .put(authCtrl.resign);
-/*router
+router
     .route('/change-info')
-    .put(authCtrl.changeInfo);*/
+    .put(authCtrl.changeInfo);
 
 export default router;
